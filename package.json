@@ -8,7 +8,7 @@
     "dev": "node build.mjs && node dist/index.mjs"
   },
   "dependencies": {
-    "openai": "^4.100.0",
+    "@google/generative-ai": "^0.21.0",
     "express": "^5.2.1",
     "cors": "^2.8.6",
     "zod": "^3.25.0"
