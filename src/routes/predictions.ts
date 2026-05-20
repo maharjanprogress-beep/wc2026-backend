@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { openai } from "../openai.js";
+import { geminiModel } from "../gemini.js";
 import { z } from "zod";
 import { getTeamLiveContext, buildSquadContext } from "../services/liveDataService.js";
 
@@ -70,24 +70,9 @@ Provide your prediction in the following JSON format exactly:
 ${hasLiveData ? "IMPORTANT: Live squad data is provided above. Use those real players in the lineups. If a known key player appears injured or absent based on recent news, reflect that in your analysis." : "Use real player names for both squads based on your knowledge of their current national team rosters."}
 Be realistic and specific. Base decisions on actual squad quality, recent form, and World Cup 2026 context.`;
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-5.4",
-    max_completion_tokens: 4096,
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a football analytics expert. Always respond with valid JSON only, no markdown, no extra text.",
-      },
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-    response_format: { type: "json_object" },
-  });
+  const result = await geminiModel.generateContent(prompt);
+  const content = result.response.text();
 
-  const content = completion.choices[0]?.message?.content;
   if (!content) {
     res.status(500).json({ error: "No response from AI" });
     return;
